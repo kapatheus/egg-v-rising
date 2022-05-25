@@ -20,6 +20,6 @@ To enable RCON, add the following to the server host settings file (located at `
 
 | Port            | Default |
 | --------------- | ------- |
-| Game            | 9976    |
-| Raw UDP         | 9977    |
+| Game Port       | 9876    |
+| QueryPort       | 9877    |
 | RCON (optional) | 25575   |
