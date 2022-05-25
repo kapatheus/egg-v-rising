@@ -1,0 +1,176 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v1",
+        "update_url": null
+    },
+    "exported_at": "2022-05-25T20:59:36+03:00",
+    "name": "V Rising",
+    "author": "Kapatheus#1990@Discord",
+    "description": "Custom save and config directory is save-data",
+    "features": null,
+    "images": [
+        "ghcr.io\/parkervcp\/yolks:wine_latest"
+    ],
+    "file_denylist": [],
+    "startup": "xvfb-run wine .\/VRisingServer.exe -persistentDataPath save-data",
+    "config": {
+        "files": "{\r\n    \"save-data\/Settings\/ServerHostSettings.json\": {\r\n        \"parser\": \"json\",\r\n        \"find\": {\r\n            \"Name\": \"{{server.build.env.SERVER_NAME}}\",\r\n            \"Description\": \"{{server.build.env.DESCRIPTION}}\",\r\n            \"Port\": \"{{server.build.env.PORT}}\",\r\n            \"QueryPort\": \"{{server.build.env.QUERY_PORT}}\",\r\n            \"MaxConnectedUsers\": \"{{server.build.env.MAX_PLAYERS}}\",\r\n            \"MaxConnectedAdmins\": \"{{server.build.env.MAX_ADMINS}}\",\r\n            \"ServerFps\": \"{{server.build.env.FPS}}\",\r\n            \"SaveName\": \"{{server.build.env.SAVE_NAME}}\",\r\n            \"Password\": \"{{server.build.env.SERVER_PASSWORD}}\",\r\n            \"Secure\": \"{{server.build.env.SERVER_SECURE}}\",\r\n            \"ListOnMasterServer\": \"{{server.build.env.LISTEN}}\",\r\n            \"AutoSaveCount\": \"{{server.build.env.SAVE_COUNT}}\",\r\n            \"AutoSaveInterval\": \"{{server.build.env.SAVE_INTERVAL}}\",\r\n            \"GameSettingsPreset\": \"{{server.build.env.GAME_SETTINGS_PRESET}}\",\r\n            \"AdminOnlyDebugEvents\": \"{{server.build.env.ADMIN_ONLY_DEBUG_EVENTS}}\",\r\n            \"DisableDebugEvents\": \"{{server.build.env.DEBUG_EVENTS}}\"\r\n        }\r\n    }\r\n}",
+        "startup": "{\r\n    \"done\": \"Loaded ServerGameSettings:\",\r\n    \"userInteraction\": []\r\n}",
+        "logs": "{}",
+        "stop": "^V"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/bash\r\n\r\napt update\r\napt -y install curl unzip lib32gcc1 ca-certificates xvfb\r\ncd \/tmp\r\ncurl -sSL -o steamcmd.tar.gz https:\/\/steamcdn-a.akamaihd.net\/client\/installer\/steamcmd_linux.tar.gz\r\n\r\nmkdir -p \/mnt\/server\/steam\r\ntar -xzvf steamcmd.tar.gz -C \/mnt\/server\/steam\r\n\r\nexport WINETRICKS_RUN=mono\r\nexport HOME=\/mnt\/server\r\nexport AUTO_UPDATE=1\r\nexport SRCDS_APPID=1829350\r\n\r\ncd \/mnt\/server\/steam\r\nchown -R root:root \/mnt\r\n\r\n.\/steamcmd.sh +@sSteamCmdForcePlatformType windows +login anonymous +force_install_dir \/mnt\/server +app_update 1829350 validate +quit\r\n\r\n## setup 32 bit libraries\r\nmkdir -p \/mnt\/server\/.steam\/sdk32\r\ncp -v \/mnt\/server\/steam\/linux32\/steamclient.so \/mnt\/server\/.steam\/sdk32\/steamclient.so\r\n\r\n## setup 64 bit libraries\r\nmkdir -p \/mnt\/server\/.steam\/sdk64\r\ncp -v \/mnt\/server\/steam\/linux64\/steamclient.so \/mnt\/server\/.steam\/sdk64\/steamclient.so\r\n\r\n# The Server Configs\r\nmkdir -p \/mnt\/server\/save-data\/Settings\r\ncd \/mnt\/server\/VRisingServer_Data\/StreamingAssets\/Settings\r\ncp ServerGameSettings.json adminlist.txt banlist.txt \/mnt\/server\/save-data\/Settings\r\ncat > \/mnt\/server\/save-data\/Settings\/ServerHostSettings.json << ENDOFFILE\r\n{\r\n  \"Name\": \"V Rising Server\",\r\n  \"Description\": \"\",\r\n  \"Port\": 9876,\r\n  \"QueryPort\": 9877,\r\n  \"MaxConnectedUsers\": 40,\r\n  \"MaxConnectedAdmins\": 4,\r\n  \"ServerFps\": 30,\r\n  \"SaveName\": \"world1\",\r\n  \"Password\": \"\",\r\n  \"Secure\": true,\r\n  \"ListOnMasterServer\": true,\r\n  \"AutoSaveCount\": 50,\r\n  \"AutoSaveInterval\": 600,\r\n  \"GameSettingsPreset\": \"\",\r\n  \"AdminOnlyDebugEvents\": true,\r\n  \"DisableDebugEvents\": false\r\n}\r\nENDOFFILE",
+            "container": "debian:buster-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Server Name",
+            "description": "",
+            "env_variable": "SERVER_NAME",
+            "default_value": "My New Server",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Description",
+            "description": "",
+            "env_variable": "DESCRIPTION",
+            "default_value": "My New Server",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Port",
+            "description": "",
+            "env_variable": "PORT",
+            "default_value": "9876",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "QueryPort",
+            "description": "",
+            "env_variable": "QUERY_PORT",
+            "default_value": "9877",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Max Connected Users",
+            "description": "",
+            "env_variable": "MAX_PLAYERS",
+            "default_value": "40",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Max Connected Admins",
+            "description": "",
+            "env_variable": "MAX_ADMINS",
+            "default_value": "4",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Server FPS",
+            "description": "",
+            "env_variable": "FPS",
+            "default_value": "30",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Save Name",
+            "description": "",
+            "env_variable": "SAVE_NAME",
+            "default_value": "world1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Password",
+            "description": "",
+            "env_variable": "SERVER_PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Secure",
+            "description": "",
+            "env_variable": "SERVER_SECURE",
+            "default_value": "true",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "List On Master Server",
+            "description": "",
+            "env_variable": "LISTEN",
+            "default_value": "true",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Auto Save Count",
+            "description": "",
+            "env_variable": "SAVE_COUNT",
+            "default_value": "50",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Auto Save Interval",
+            "description": "",
+            "env_variable": "SAVE_INTERVAL",
+            "default_value": "600",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Game Settings Preset",
+            "description": "",
+            "env_variable": "SETTINGS_PRESET",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Admin Only Debug Events",
+            "description": "",
+            "env_variable": "ADMIN_ONLY_DEBUG_EVENTS",
+            "default_value": "true",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        },
+        {
+            "name": "Disable Debug Events",
+            "description": "",
+            "env_variable": "DEBUG_EVENTS",
+            "default_value": "false",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string"
+        }
+    ]
+}
